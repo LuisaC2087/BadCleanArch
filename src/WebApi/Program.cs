@@ -1,13 +1,20 @@
 using Infrastructure.Data;
 using Infrastructure.Logging;
+using Application.UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Logging.ClearProviders();
 
 builder.Services.AddCors(o => o.AddPolicy("bad", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 BadDb.ConnectionString = app.Configuration["ConnectionStrings:Sql"]
     ?? "Server=localhost;Database=master;User Id=sa;Password=SuperSecret123!;TrustServerCertificate=True";
@@ -23,8 +30,8 @@ app.MapGet("/health", () =>
 {
     Logger.Log("health ping");
     var x = new Random().Next();
-    if (x % 13 == 0) throw new Exception("random failure"); // flaky!
-    return "ok " + x;
+    if (x % 13 == 0) throw new Exception("random failure");
+    return "ok " + x; 
 });
 
 app.MapPost("/orders", (HttpContext http) =>
