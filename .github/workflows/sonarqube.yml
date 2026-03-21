@@ -1,4 +1,5 @@
-﻿name: SonarQube
+﻿$ymlContent = @"
+name: SonarCloud_NET
 on:
   push:
     branches:
@@ -7,8 +8,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build and analyze
+  analysis:
+    name: Analisis de Codigo
     runs-on: windows-latest
     steps:
       - name: Set up JDK 17
@@ -35,11 +36,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          # Iniciamos el scanner con tus datos específicos
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"LuisaC2087_BadCleanArch" /o:"luisac2087" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          
-          # Compilamos el proyecto
+          & "${{ runner.temp }}\scanner\dotnet-sonarscanner" begin /k:"LuisaC2087_BadCleanArch" /o:"luisac2087" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build
-          
-          # Finalizamos el análisis
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          & "${{ runner.temp }}\scanner\dotnet-sonarscanner" end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+"@
+
+$ymlContent | Out-File -FilePath .github/workflows/sonarqube.yml -Encoding utf8
