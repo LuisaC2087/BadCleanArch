@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0 
 
-      - name: Install SonarQube Cloud scanner
+      - name: Install SonarScanner
         shell: powershell
         run: |
           if (!(Test-Path "${{ runner.temp }}\scanner")) {
@@ -35,9 +35,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          # IMPORTANTE: Aquí es donde se definen las claves manualmente para que no lleguen vacías
+          # Iniciamos el scanner con tus datos específicos
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"LuisaC2087_BadCleanArch" /o:"luisac2087" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           
+          # Compilamos el proyecto
           dotnet build
           
+          # Finalizamos el análisis
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
