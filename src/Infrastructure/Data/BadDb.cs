@@ -4,10 +4,16 @@ namespace Infrastructure.Data;
 using System.Data; 
 using Microsoft.Data.SqlClient; 
 
+
+
 public static class BadDb 
 {
-    public static string ConnectionString = "Server=localhost;Database=master;User Id=sa;Password=SuperSecret123!;TrustServerCertificate=True"; // MALA PRÁCTICA GRAVE: Almacena la contraseña de la base de datos fijada (hardcoded) en el código.
+    // codigo original public static string ConnectionString ="Server=localhost;Database=OrdersDb;Trusted_Connection=True;TrustServerCertificate=True";
 
+    public static string ConnectionString = String.Format(
+    "server=database-server;uid=user;pwd=%s;database=ProductionData",
+    Environment.GetEnvironmentVariable("DB_PASSWORD")
+);
 
     public static int ExecuteNonQueryUnsafe(string sql) 
     {
@@ -24,4 +30,6 @@ public static class BadDb
         conn.Open(); 
         return cmd.ExecuteReader(); 
     }
+
+
 }
