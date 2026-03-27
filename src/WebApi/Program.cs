@@ -1,26 +1,29 @@
 using Infrastructure.Data; 
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
 builder.Services.AddScoped<CreateOrderUseCase>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); 
 
 builder.Logging.ClearProviders(); 
 
-builder.Services.AddCors(o => o.AddPolicy("bad", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod())); 
+builder.Services.AddCors(o => o.AddPolicy("bad", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
+builder.Services.AddScoped<IOrderRepository>(sp =>
+{
+    var config = builder.Configuration;
+    var conn = config.GetConnectionString("Sql");
+
+    return new SqlOrderRepository(conn);
+});
 
 var app = builder.Build(); 
 
 app.UseSwagger(); 
-app.UseSwaggerUI(); 
-
-//BadDb.ConnectionString = app.Configuration["ConnectionStrings:Sql"] 
-    //?? "Server=localhost;Database=master;User Id=sa;Password=SuperSecret123!;TrustServerCertificate=True"; 
+app.UseSwaggerUI();  
 
 app.UseCors("bad"); 
 
@@ -51,11 +54,11 @@ app.MapPost("/orders", (CreateOrderUseCase uc, CreateOrderRequest req) =>
 
 app.MapGet("/orders/last", (IOrderRepository repo) => repo.GetLast());
 
-app.MapGet("/info", (IConfiguration cfg) => new 
+
+app.MapGet("/info", (IHostEnvironment env) => new
 {
-    //sql = BadDb.ConnectionString,
-    env = Environment.GetEnvironmentVariables(), 
-    version = "v0.0.1-unsecure" 
+    environment = env.EnvironmentName,
+    version = "v1"
 });
 
 app.Run(); 

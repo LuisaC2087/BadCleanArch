@@ -3,16 +3,19 @@ using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Data;
 
+namespace Infrastructure.Data;
+
 public class SqlOrderRepository : IOrderRepository
 {
     private readonly string _connectionString;
 
-    public SqlOrderRepository(IConfiguration config)
+    public SqlOrderRepository(string connectionString)
     {
-        _connectionString = config.GetConnectionString("Sql");
+        _connectionString = connectionString;
     }
 
     public void Save(Order order)
+
     {
         using var conn = new SqlConnection(_connectionString);
         conn.Open();
