@@ -2,6 +2,7 @@ using Domain.Entities;
 using System;
 using Application.Interfaces;
 
+namespace Application.UseCases;
 
 public class CreateOrderUseCase
 {
