@@ -1,10 +1,12 @@
 using Infrastructure.Data;
+using Infrastructure.Logging;
 using Application.Interfaces;
 using Application.UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<CreateOrderUseCase>();
+builder.Services.AddSingleton<ILog, LoggerConsole>();
 
 
 builder.Services.AddEndpointsApiExplorer();
