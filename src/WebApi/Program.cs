@@ -1,5 +1,6 @@
 using Infrastructure.Data;
 using Application.Interfaces;
+using Application.UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
