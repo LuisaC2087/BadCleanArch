@@ -12,12 +12,12 @@ public class CreateOrderUseCase
     public CreateOrderUseCase(IOrderRepository repo, ILog logger)
     {
         _repo = repo;
-        _logger = logger;
+        _log = logger;
     }
 
     public Order Execute(string customer, string product, int qty, decimal price)
     {
-        _logger.Log("Creating order");
+        _log.Log("Creating order");
 
         var order = new Order
         {
