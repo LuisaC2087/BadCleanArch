@@ -1,4 +1,5 @@
-using Infrastructure.Data; 
+using Infrastructure.Data;
+using Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

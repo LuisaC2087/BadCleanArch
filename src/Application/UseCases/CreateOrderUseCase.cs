@@ -1,5 +1,6 @@
 using Domain.Entities;
 using System;
+using Application.Interfaces;
 
 public class CreateOrderUseCase
 {
