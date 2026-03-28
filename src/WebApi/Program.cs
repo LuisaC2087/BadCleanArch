@@ -65,4 +65,4 @@ app.MapGet("/info", (IHostEnvironment env) => new
     version = "v1"
 });
 
-app.Run(); 
+await app.RunAsync();
