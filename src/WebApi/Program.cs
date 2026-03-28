@@ -12,9 +12,15 @@ builder.Services.AddSingleton<ILog, LoggerConsole>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); 
 
-builder.Logging.ClearProviders(); 
+builder.Logging.ClearProviders();
 
-builder.Services.AddCors(o => o.AddPolicy("bad", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+var allowedOrigins = builder.Configuration["Cors:Origins"]?.Split(',');
+
+builder.Services.AddCors(o => o.AddPolicy("cors", p =>
+    p.WithOrigins(allowedOrigins ?? new string[] { })
+     .AllowAnyHeader()
+     .AllowAnyMethod()
+));
 
 builder.Services.AddScoped<IOrderRepository>(sp =>
 {
