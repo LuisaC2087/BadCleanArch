@@ -33,5 +33,6 @@ public class CreateOrderUseCaseTests
         Assert.NotNull(result);
         Assert.Equal("Luisa", result.Customer);
         Assert.Equal(2, result.Qty);
+        Assert.Equal(10000, result.Total);
     }
 }
