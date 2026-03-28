@@ -17,7 +17,7 @@ builder.Logging.ClearProviders();
 var allowedOrigins = builder.Configuration["Cors:Origins"]?.Split(',');
 
 builder.Services.AddCors(o => o.AddPolicy("cors", p =>
-    p.WithOrigins(allowedOrigins ?? new string[] { })
+    p.WithOrigins(allowedOrigins ?? Array.Empty<string>())
      .AllowAnyHeader()
      .AllowAnyMethod()
 ));
