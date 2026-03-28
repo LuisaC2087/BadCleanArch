@@ -2,7 +2,7 @@ using Application.Interfaces;
 using Application.UseCases;
 using Infrastructure.Data;
 using Infrastructure.Logging;
-using Microsoft.OpenApi; // Única línea nueva de importación
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +10,6 @@ builder.Services.AddScoped<CreateOrderUseCase>();
 builder.Services.AddSingleton<ILog, LoggerConsole>();
 
 builder.Services.AddEndpointsApiExplorer();
-// Configuración de Swagger para que reconozca la versión
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -38,7 +37,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("bad");
+app.UseCors("cors");
 
 app.Use(async (ctx, next) =>
 {
@@ -59,7 +58,6 @@ app.MapGet("/", context =>
 
 app.MapGet("/health", () => "ok");
 
-// Se agrega .Produces para documentar el esquema de respuesta
 app.MapPost("/orders", (CreateOrderUseCase uc, CreateOrderRequest req) =>
 {
     var order = uc.Execute(req.Customer, req.Product, req.Qty, req.Price);
