@@ -1,19 +1,22 @@
-using Infrastructure.Data;
-using Infrastructure.Logging;
 using Application.Interfaces;
 using Application.UseCases;
+using Infrastructure.Data;
+using Infrastructure.Logging;
+using Microsoft.OpenApi; // Única línea nueva de importación
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<CreateOrderUseCase>();
 builder.Services.AddSingleton<ILog, LoggerConsole>();
 
-
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); 
+// Configuración de Swagger para que reconozca la versión
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+});
 
 builder.Logging.ClearProviders();
-
 var allowedOrigins = builder.Configuration["Cors:Origins"]?.Split(',');
 
 builder.Services.AddCors(o => o.AddPolicy("cors", p =>
@@ -30,14 +33,14 @@ builder.Services.AddScoped<IOrderRepository>(sp =>
     return new SqlOrderRepository(conn);
 });
 
-var app = builder.Build(); 
+var app = builder.Build();
 
-app.UseSwagger(); 
-app.UseSwaggerUI();  
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseCors("bad"); 
+app.UseCors("bad");
 
-app.Use(async (ctx, next) => 
+app.Use(async (ctx, next) =>
 {
     try { await next(); }
     catch (Exception ex)
@@ -56,19 +59,20 @@ app.MapGet("/", context =>
 
 app.MapGet("/health", () => "ok");
 
+// Se agrega .Produces para documentar el esquema de respuesta
 app.MapPost("/orders", (CreateOrderUseCase uc, CreateOrderRequest req) =>
 {
     var order = uc.Execute(req.Customer, req.Product, req.Qty, req.Price);
     return Results.Ok(order);
-});
+}).Produces<object>(StatusCodes.Status200OK);
 
-app.MapGet("/orders/last", (IOrderRepository repo) => repo.GetLast());
-
+app.MapGet("/orders/last", (IOrderRepository repo) => repo.GetLast())
+   .Produces<object>(StatusCodes.Status200OK);
 
 app.MapGet("/info", (IHostEnvironment env) => new
 {
     environment = env.EnvironmentName,
     version = "v1"
-});
+}).Produces<object>(StatusCodes.Status200OK);
 
 await app.RunAsync();
