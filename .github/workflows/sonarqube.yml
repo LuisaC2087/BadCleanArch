@@ -37,13 +37,20 @@ jobs:
         run: |
           New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
-      - name: Test
-        run: dotnet test --collect:"XPlat Code Coverage"
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"LuisaC2087_BadCleanArch" /o:"luisac2087" /d:sonar.token="$env:SONAR_TOKEN"
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin `
+            /k:"LuisaC2087_BadCleanArch" `
+            /o:"luisac2087" `
+            /d:sonar.token="$env:SONAR_TOKEN" `
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+
           dotnet build
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
+
+          dotnet test --collect:"XPlat Code Coverage"
+
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner end `
+            /d:sonar.token="$env:SONAR_TOKEN"
